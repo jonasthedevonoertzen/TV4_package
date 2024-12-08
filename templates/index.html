@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Story Creator{% endblock %}
+
+{% block content %}
+<h1>Story Creator</h1>
+
+{% if current_user.is_authenticated %}
+    <h2>Your Stories</h2>
+    <ul>
+    {% for story in stories %}
+        <li>
+            {{ story.name }}
+            {% if selected_story and story.id == selected_story.id %}
+                (Selected)
+            {% else %}
+                <a href="{{ url_for('main.select_story', story_id=story.id) }}">Select</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+    <a href="{{ url_for('main.create_story_route') }}">Create New Story</a>
+
+    {% if selected_story %}
+        <h2>Current Story: {{ selected_story.name }}</h2>
+        <h3>Add a Unit</h3>
+        <ul>
+        {% for unit_type in unit_classes_dict.keys() %}
+            <li><a href="{{ url_for('main.add_unit', unit_type=unit_type, story_id=selected_story.id) }}">{{ unit_type }}</a></li>
+        {% endfor %}
+        </ul>
+        <h3>Existing Units</h3>
+        {% for unit in selected_story.units %}
+            <div class="unit">
+                <strong>{{ unit.unit_type }} {{ unit.features.get('name', '') }}</strong><br>
+                {% for feature_name, value in unit.features.items() %}
+                    <em>{{ feature_name }}</em>: {{ value }}<br>
+                {% endfor %}
+                <!-- Edit Link -->
+                <a href="{{ url_for('main.edit_unit', story_id=selected_story.id, unit_name=unit.name) }}">Edit</a>
+            </div>
+        {% endfor %}
+        <a href="{{ url_for('main.download_story', story_id=selected_story.id) }}">Download Story</a>
+    {% else %}
+        <p>Please select a story to begin.</p>
+    {% endif %}
+{% else %}
+    <p>Please log in to create and view stories.</p>
+{% endif %}
+{% endblock %}
