@@ -16,7 +16,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Import service functions
-from story_creator.services import get_user_by_email, create_user
+from story_creator.database_handler import get_user_by_email, create_user, get_user_by_username, update_username
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -119,3 +119,29 @@ Story Creator Team"""
         print(f'Email Address: {email}')
         print(f'Secure Link: {login_link}')
 
+# blueprints/auth.py
+
+@auth_bp.route('/change_username', methods=['GET', 'POST'])
+@login_required
+def change_username():
+    """Allow users to change their username."""
+    if request.method == 'POST':
+        new_username = request.form.get('username', '').strip()
+        errors = []
+
+        if not new_username:
+            errors.append('Please enter a new username.')
+        elif get_user_by_username(new_username):
+            errors.append('This username is already taken. Please choose another one.')
+        else:
+            # Update the username in the database
+            update_username(current_user.email, new_username)
+            current_user.username = new_username
+            flash('Your username has been updated.')
+            return redirect(url_for('main.index'))
+
+        for error in errors:
+            flash(error)
+        return render_template('change_username.html', username=new_username)
+
+    return render_template('change_username.html', username=current_user.username)

@@ -3,16 +3,8 @@
 """
 Story Creator Package Initialization.
 
-This module imports key classes and functions from submodules
-and initializes the database by creating tables if they don't exist.
+This module initializes the package and provides access to the database initialization
+function from the 'database_handler' module.
 """
 
-from .new_models import (
-    Base,
-    # Other models...
-)
-from .database import engine
-
-def init_db():
-    """Initialize the database by creating all tables."""
-    Base.metadata.create_all(bind=engine)
+from .database_handler import init_db

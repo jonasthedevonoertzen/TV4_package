@@ -1,0 +1,92 @@
+:root {
+    --primary-blue: #1F3C88; /* Adjust to match your logo's blue */
+    --primary-beige: #F5F5DC; /* Adjust to match your logo's beige */
+    --text-color: #333;
+    --bg-color: #FAF2D5; /* Light beige for background */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    background-color: var(--primary-blue) !important;
+}
+
+.navbar-brand, .nav-link, .navbar-text {
+    color: var(--primary-beige) !important;
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+}
+
+.btn-outline-light {
+    color: var(--primary-beige);
+    border-color: var(--primary-beige);
+}
+
+.btn-outline-light:hover {
+    background-color: var(--primary-beige);
+    color: var(--primary-blue);
+    border-color: var(--primary-beige);
+}
+
+h1, h2, h3 {
+    color: var(--primary-blue);
+}
+
+.card {
+    margin-bottom: 1rem;
+}
+
+.sc-button {
+    background-color: var(--primary-blue);
+    color: var(--primary-beige);
+    border: none;
+    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sc-button:hover {
+    background-color: darken(var(--primary-blue), 10%);
+}
+
+.sc-button img {
+    width: 20px;
+    height: auto;
+    margin-right: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+footer {
+    background-color: var(--primary-beige);
+}
+
+.alert-info {
+    background-color: var(--primary-beige);
+    color: var(--text-color);
+    border-color: var(--primary-blue);
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+.scrollable-units {
+    max-height: 500px;  /* Set desired max height */
+    overflow-y: auto;
+    /* Optional: Add some padding or border */
+    padding-right: 15px; /* To account for scrollbar */
+}

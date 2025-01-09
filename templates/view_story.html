@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ story.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <h2>{{ story.name }}</h2>
+        <!-- Render the story HTML safely -->
+        <div class="card">
+            <div class="card-body">
+                {{ story_html|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

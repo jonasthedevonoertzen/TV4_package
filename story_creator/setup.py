@@ -9,6 +9,7 @@ setup(
     install_requires=[
         'sqlalchemy',
         'fpdf',
+        'openai'
     ],
     author='Your Name',  # Replace with your actual name.
     author_email='your.email@example.com',  # Replace with your actual email.

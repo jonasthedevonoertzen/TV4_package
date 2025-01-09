@@ -3,57 +3,72 @@
 {% block title %}{% if edit_mode %}Edit{% else %}Add{% endif %} {{ unit_type }}{% endblock %}
 
 {% block content %}
-<h1>{% if edit_mode %}Edit{% else %}Add{% endif %} {{ unit_type }}{% if not edit_mode %} to {{ story.name }}{% endif %}</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>{% if edit_mode %}Edit{% else %}Add{% endif %} {{ unit_type }}</h2>
 
-{% if errors %}
-    <div class="error-messages">
-        <ul>
-        {% for error in errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-        </ul>
-    </div>
-{% endif %}
+        {% if errors %}
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
-<form method="post">
-    <!-- New Description Field -->
-    {% if not edit_mode %}
-    <div class="form-group">
-        <label for="unit_description">Describe the {{ unit_type }} you want to create:</label><br>
-        <textarea name="unit_description" id="unit_description" rows="4" cols="50">{{ form_data.get('unit_description', '') }}</textarea>
-    </div>
-    <!-- "Fill Out Features" Button -->
-    <button type="submit" name="action" value="fill_features">Fill Out Features</button>
-    {% endif %}
-
-    <!-- Existing Fields -->
-    {% for field in fields %}
-        <div class="form-group">
-            <label>{{ field.name }}{% if field.name == 'name' %} *{% endif %}</label><br>
-            <!-- Field Rendering Logic -->
-            {% if field.type == 'bool' %}
-                <input type="checkbox" name="{{ field.name }}" {% if form_data.get(field.name, False) in [True, 'True', 'on'] %}checked{% endif %}>
-            {% elif field.type == 'float' %}
-                <input type="range" name="{{ field.name }}" min="0" max="1" step="0.01" value="{{ form_data.get(field.name, '0.5') }}" oninput="document.getElementById('{{ field.name }}_output').innerHTML = this.value">
-                <span id="{{ field.name }}_output">{{ form_data.get(field.name, '0.5') }}</span>
-            {% elif field.type == 'str' %}
-                <input type="text" name="{{ field.name }}" value="{{ form_data.get(field.name, '') }}"{% if field.name == 'name' %} required{% endif %}>
-            {% elif field.type == 'list' %}
-                <select name="{{ field.name }}" multiple size="5">
-                    {% for name, label in field.options %}
-                        <option value="{{ name }}" {% if name in form_data.getlist(field.name) %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-                <br>or enter new names (comma-separated):<br>
-                <input type="text" name="{{ field.name }}_new" value="{{ form_data.get(field.name + '_new', '') }}">
-            {% else %}
-                <input type="text" name="{{ field.name }}" value="{{ form_data.get(field.name, '') }}">
+        <form method="post">
+            {% if not edit_mode %}
+            <div class="mb-3">
+                <label for="unit_description" class="form-label">Describe the {{ unit_type }} you want to create:</label>
+                <textarea class="form-control" name="unit_description" id="unit_description" rows="4">{{ form_data.get('unit_description', '') }}</textarea>
+            </div>
+            <button type="submit" name="action" value="fill_features" class="btn btn-secondary mb-3">Fill Out Features</button>
             {% endif %}
-        </div>
-    {% endfor %}
 
-    <!-- Submit Button -->
-    <button type="submit" name="action" value="save_unit">{% if edit_mode %}Update{% else %}Add{% endif %} {{ unit_type }}</button>
-</form>
-<a href="{{ url_for('main.index') }}">Back to Story</a>
+            {% for field in fields %}
+                <div class="mb-3">
+                    <label class="form-label">{{ field.name }}{% if field.name == 'name' %} *{% endif %}</label>
+                    {% if field.type == 'bool' %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="{{ field.name }}" id="{{ field.name }}" {% if form_data.get(field.name, False) in [True, 'True', 'on'] %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ field.name }}">Yes / No</label>
+                        </div>
+                    {% elif field.type == 'float' %}
+                        <input type="range" class="form-range" name="{{ field.name }}" min="0" max="1" step="0.01" value="{{ form_data.get(field.name, '0.5') }}" oninput="document.getElementById('{{ field.name }}_output').innerHTML = this.value">
+                        <span id="{{ field.name }}_output">{{ form_data.get(field.name, '0.5') }}</span>
+                    {% elif field.type == 'str' %}
+                        {% if field.name == 'name' and field.options %}
+                            <input list="{{ field.name }}_list" type="text" class="form-control" name="{{ field.name }}" value="{{ form_data.get(field.name, '') }}" required>
+                            <datalist id="{{ field.name }}_list">
+                                {% for option in field.options %}
+                                    <option value="{{ option }}">
+                                {% endfor %}
+                            </datalist>
+                        {% else %}
+                            <input type="text" class="form-control" name="{{ field.name }}" value="{{ form_data.get(field.name, '') }}"{% if field.name == 'name' %} required{% endif %}>
+                        {% endif %}
+                    {% elif field.type == 'list' %}
+                        <select class="form-select" name="{{ field.name }}" multiple size="5">
+                            {% for name, label in field.options %}
+                                <option value="{{ name }}" {% if name in form_data.get(field.name, []) %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple options.</small>
+                        <div class="mt-2">
+                            <label for="{{ field.name }}_new" class="form-label">Or enter new names (comma-separated):</label>
+                            <input type="text" class="form-control" name="{{ field.name }}_new" value="{{ form_data.get(field.name + '_new', '') }}">
+                        </div>
+                    {% else %}
+                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ form_data.get(field.name, '') }}">
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" name="action" value="save_unit" class="btn btn-primary">{% if edit_mode %}Update{% else %}Add{% endif %} {{ unit_type }}</button>
+            <a href="{{ url_for('main.index') }}" class="btn btn-link">Back to Story</a>
+        </form>
+    </div>
+</div>
 {% endblock %}

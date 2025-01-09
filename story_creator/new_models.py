@@ -1,49 +1,35 @@
-# story_creator/new_models.py
+# new_models.py
 
 """
-Database Models and ORM Classes for the Story Creator.
+Model Classes for the Story Creator.
 
-This module defines the SQLAlchemy ORM models for the Story Creator application,
-including the 'User', 'Story', 'Unit', and various subclasses of 'Unit' representing different
+This module defines the classes for the Story Creator application,
+including 'User', 'Story', 'Unit', and various subclasses of 'Unit' representing different
 entities like 'Character', 'EventOrScene', 'Item', etc.
 """
 
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    Boolean,
-    Text,
-    ForeignKey,
-    PickleType,
-)
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.mutable import MutableDict, MutableList
-from sqlalchemy.ext.declarative import declarative_base
-
+from fpdf import FPDF
 from flask_login import UserMixin
+import os
+from .openai_api_call import call_openai
 
-# Base class for declarative class definitions.
-Base = declarative_base()
-
-class User(Base, UserMixin):
-    """User model for authentication."""
-    __tablename__ = 'user'
-
-    email = Column(String(150), primary_key=True)
-
-    # Define relationship to Story model
-    stories = relationship('Story', back_populates='user')
+class User(UserMixin):
+    """User class for authentication."""
+    def __init__(self, email, username):
+        self.email = email
+        self.username = username
+        self.stories = []  # List of Story objects
 
     def get_id(self):
+        """Returns a unique identifier for the user."""
         return self.email
 
-class Story(Base):
-    """ORM Model representing a Story.
+
+class Story:
+    """Class representing a Story.
 
     Attributes:
-        id (int): Primary key.
+        id (int): Unique identifier for the story.
         name (str): Name of the story.
         user_email (str): Email of the user who owns the story.
         undefined_names (list): List of undefined names used in the story.
@@ -52,37 +38,67 @@ class Story(Base):
         units (list): List of units associated with the story.
     """
 
-    __tablename__ = 'story'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(150), nullable=False)
-    user_email = Column(String(150), ForeignKey('user.email'), nullable=False)
-    undefined_names = Column(MutableList.as_mutable(PickleType), default=[])
-    setting_and_style = Column(Text, nullable=False)
-    main_challenge = Column(Text, nullable=False)
-
-    # Relationship to 'Unit' models.
-    units = relationship('Unit', cascade='all, delete-orphan', back_populates='story')
-    # Relationship to 'User' model
-    user = relationship('User', back_populates='stories')
-
-    def __init__(self, name, user_email, setting_and_style, main_challenge):
+    def __init__(self, id, name, user_email, setting_and_style, main_challenge):
         """Initialize a new Story instance.
 
         Args:
+            id (int): Unique identifier for the story.
             name (str): Name of the story.
             user_email (str): Email of the user who owns the story.
             setting_and_style (str): Description of the setting and style.
             main_challenge (str): Description of the main challenge.
         """
+        self.id = id
         self.name = name
         self.user_email = user_email
         self.setting_and_style = setting_and_style
         self.main_challenge = main_challenge
         self.undefined_names = []
-        # The Story instance will be saved to the database via the service layer.
+        self.units = []  # List of Unit objects
+
+    def _generate_prompt(self):
+        """Generate a prompt for the OpenAI API based on the story content."""
+        prompt = f"Write a full story based on the following details:\n\n"
+        prompt += f"Setting and Style:\n{self.setting_and_style}\n\n"
+        prompt += f"Main Challenge:\n{self.main_challenge}\n\n"
+        prompt += "Units:\n"
+        for unit in self.units:
+            prompt += f"{unit.unit_type}: {unit.name}\n"
+            for key, value in unit.features.items():
+                prompt += f"  {key}: {value}\n"
+            prompt += "\n"
+        return prompt
+
+    def to_text(self, filename='story.txt'):
+        """Generate the story as a text file using OpenAI API."""
+
+        try:
+            # Prepare the prompt
+            messages = [{
+                "role": "user",
+                "content": self._generate_prompt()
+            }]
+
+            story_text = call_openai(messages=messages, model="o1-mini") # , model="gpt-4o-mini"
+
+            # Write the story to the text file
+            with open(filename, 'w', encoding='utf-8') as file:
+                file.write(story_text)
+
+        except Exception as e:
+            print(f"Error generating story text: {e}")
+            raise
 
     # --- Serialization Methods ---
+    def to_text_list(self):
+        """Return a textual list of units in the story."""
+        text = ""
+        for unit in self.units:
+            text += f"{unit.unit_type}: {unit.name}\n"
+            for key, value in unit.features.items():
+                text += f"  {key}: {value}\n"
+            text += "\n"
+        return text
 
     def to_json(self):
         """Serialize the story to a JSON-friendly dictionary.
@@ -116,7 +132,7 @@ class Story(Base):
         Args:
             filename (str, optional): Filename for the PDF. Defaults to 'story.pdf'.
         """
-        from fpdf import FPDF
+
         pdf = FPDF()
         pdf.add_page()
         pdf.set_auto_page_break(auto=True, margin=15)
@@ -170,50 +186,35 @@ class Story(Base):
         """
         return iter(self.units)
 
-class Unit(Base):
-    """Base ORM Model representing a Unit in the Story.
+
+class Unit:
+    """Base Class representing a Unit in the Story.
 
     Attributes:
-        id (int): Primary key.
+        id (int): Unique identifier for the unit.
         unit_type (str): Type of the unit (e.g., 'Character', 'EventOrScene').
         name (str): Name of the unit.
-        story_id (int): Foreign key to the associated story.
+        story_id (int): ID of the associated story.
         features (dict): Dictionary of unit's features.
-        story (Story): Relationship to the associated story.
     """
 
-    __tablename__ = 'unit'
-    id = Column(Integer, primary_key=True)
-    unit_type = Column(String(50))
-    name = Column(String(150), nullable=False)
-    story_id = Column(Integer, ForeignKey('story.id'), nullable=False)
-    features = Column(MutableDict.as_mutable(PickleType), default={})
-
-    # Relationship to the 'Story' model.
-    story = relationship('Story', back_populates='units')
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'unit',
-        'polymorphic_on': unit_type
-    }
-
-    # Base feature schema that can be extended by subclasses.
     base_feature_schema = {'name': str}
 
-    def __init__(self, unit_type, features, story_id=None):
+    def __init__(self, unit_type, name, story_id, features, id=None):
         """Initialize a new Unit instance.
 
         Args:
+            id (int): Unique identifier for the unit.
             unit_type (str): Type of the unit.
+            name (str): Name of the unit.
+            story_id (int): ID of the associated story.
             features (dict): Dictionary of the unit's features.
-            story_id (int, optional): ID of the associated story.
         """
+        self.id = id
         self.unit_type = unit_type
+        self.name = name
+        self.story_id = story_id
         self.features = features
-        self.name = self.features.get('name', '').strip()
-        if story_id:
-            self.story_id = story_id
-        # The Unit instance will be saved to the database via the service layer.
 
     # --- Serialization Methods ---
 
@@ -242,15 +243,16 @@ class Unit(Base):
         html_content += "</ul>"
         return html_content
 
+
 # Subclasses of Unit
 
 class EventOrScene(Unit):
-    """ORM Model representing an Event or Scene in the Story.
+    """Class representing an Event or Scene in the Story.
 
     Attributes:
         feature_schema (dict): Schema defining the features and their data types.
     """
-    # Extend the base feature schema with specific fields for EventOrScene.
+    # Extend the base feature schema with specific fields
     feature_schema = {**Unit.base_feature_schema, **{
         'Which people are involved?': list,
         'Which groups are involved?': list,
@@ -270,86 +272,50 @@ class EventOrScene(Unit):
         'How likely will this scene occur?': float,
     }}
 
-    __mapper_args__ = {
-        'polymorphic_identity': 'EventOrScene',
-    }
 
 class Secret(Unit):
-    """ORM Model representing a Secret in the Story.
-
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature schema with specific fields for Secret.
+    """Class representing a Secret in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'What is the secret?': str,
         'Who knows of it?': list,
         'Which people are involved?': list,
         'Which groups are involved?': list,
         'Which items are involved?': list,
-        'Excitement level (0.0 to 1.0)': float,
+        'Excitement level': float,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'Secret',
-    }
+
 
 class Item(Unit):
-    """ORM Model representing an Item in the Story.
-
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature schema with specific fields for Item.
+    """Class representing an Item in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'Who owns this?': list,
-        'Worth (0.0 to 1.0)': float,
+        'Worth': float,
         'What is it?': str,
         'Where is it?': list,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'Item',
-    }
+
 
 class Beast(Unit):
-    """ORM Model representing a Beast in the Story.
-
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature schema with specific fields for Beast.
+    """Class representing a Beast in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'Which race is this beast?': str,
         'Where could it be?': list,
         'What does it look like?': str,
-        'Aggressiveness (0.0 to 1.0)': float,
+        'Aggressiveness': float,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'Beast',
-    }
 
-class Group(Unit):
-    """ORM Model representing a Group in the Story.
 
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature schema with specific fields for Group.
+class Grouping(Unit):
+    """Class representing a Group in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'Who is part of the group?': list,
         'Reason for solidarity': str,
         'Where did the group first meet?': list,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'Group',
-    }
+
 
 class Motivation(Unit):
-    """ORM Model representing a Motivation in the Story.
-
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature schema with specific fields for Motivation.
+    """Class representing a Motivation in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'Who is motivated?': list,
         'What is the motivation for?': str,
@@ -360,17 +326,10 @@ class Motivation(Unit):
         # ... Additional motivation sources ...
         'Is reflection the source of motivation?': bool,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'Motivation',
-    }
+
 
 class Place(Unit):
-    """ORM Model representing a Place in the Story.
-
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature schema with specific fields for Place.
+    """Class representing a Place in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'Where is it?': str,
         'Environmental conditions': str,
@@ -390,20 +349,13 @@ class Place(Unit):
         # ... Additional place types ...
         'Is it a cave?': bool,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'Place',
-    }
+
 
 class TransportationInfrastructure(Unit):
-    """ORM Model representing Transportation Infrastructure in the Story.
-
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature schema with specific fields for TransportationInfrastructure.
+    """Class representing Transportation Infrastructure in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'Connecting places': list,
-        'Usage frequency (0.0 to 1.0)': float,
+        'Usage frequency': float,
         # Boolean fields representing allowed transportation types.
         'For motor vehicles?': bool,
         'For non-motor vehicles?': bool,
@@ -414,17 +366,10 @@ class TransportationInfrastructure(Unit):
         # ... Additional infrastructure types ...
         'Is it a bridge?': bool,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'TransportationInfrastructure',
-    }
+
 
 class Character(Unit):
-    """ORM Model representing a Character in the Story.
-
-    Attributes:
-        feature_schema (dict): Schema defining the features and their data types.
-    """
-    # Extend the base feature_schema with specific fields for Character.
+    """Class representing a Character in the Story."""
     feature_schema = {**Unit.base_feature_schema, **{
         'Is this a player character?': bool,
         'Skills or talents': str,
@@ -435,6 +380,20 @@ class Character(Unit):
         'Important people for this character': list,
         'Important items for this character': list,
     }}
-    __mapper_args__ = {
-        'polymorphic_identity': 'Character',
-    }
+
+
+# Mapping of unit_type to class
+UNIT_TYPE_TO_CLASS = {
+    'EventOrScene': EventOrScene,
+    'Secret': Secret,
+    'Item': Item,
+    'Beast': Beast,
+    'Grouping': Grouping,
+    'Motivation': Motivation,
+    'Place': Place,
+    'TransportationInfrastructure': TransportationInfrastructure,
+    'Character': Character,
+}
+
+def get_unit_class(unit_type):
+    return UNIT_TYPE_TO_CLASS.get(unit_type, Unit)
