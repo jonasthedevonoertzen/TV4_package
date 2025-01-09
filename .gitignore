@@ -1,8 +1,13 @@
 /static/ignore/
-/pdf_files/
 /.venv/
 /static/black_and_white_logo.png
 /static/coloured_logo.png
 /black_white.jpeg
-/static/white_transparent.png
-/static/favicon.ico
+/pdf_files/story_1.pdf
+/pdf_files/story_2.pdf
+/pdf_files/story_6.pdf
+/story_creator.db
+/combined_file.txt
+/res.md
+/desired_result.txt
+/combine_files.py
