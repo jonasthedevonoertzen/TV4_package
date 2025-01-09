@@ -111,6 +111,14 @@ def add_existing_unit(unit_id):
         abort(404, description="Unit not found.")
 
     if action == 'add':
+        # Check for duplicate names in the same story
+        name = unit.name.strip()
+        existing_unit = get_unit_by_name(story_id, name)
+        if existing_unit:
+            flash(f"ERROR: A unit with the name '{name}' already exists in this story.")
+            # errors.append(f"A unit with the name '{name}' already exists in this story.")
+            return redirect(url_for('main.index'))
+
         # Create a new unit with the same features
         new_unit = type(unit)(
             unit_type=unit.unit_type,

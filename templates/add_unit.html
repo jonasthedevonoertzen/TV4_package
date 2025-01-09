@@ -23,7 +23,10 @@
                 <label for="unit_description" class="form-label">Describe the {{ unit_type }} you want to create:</label>
                 <textarea class="form-control" name="unit_description" id="unit_description" rows="4">{{ form_data.get('unit_description', '') }}</textarea>
             </div>
-            <button type="submit" name="action" value="fill_features" class="btn btn-secondary mb-3">Fill Out Features</button>
+            <button type="submit" name="action" value="fill_features" class="btn btn-secondary mb-3">
+                <span class="icon"></span>
+                Fill Out Features
+            </button>
             {% endif %}
 
             {% for field in fields %}
@@ -66,7 +69,10 @@
                 </div>
             {% endfor %}
 
-            <button type="submit" name="action" value="save_unit" class="btn btn-primary">{% if edit_mode %}Update{% else %}Add{% endif %} {{ unit_type }}</button>
+            <button type="submit" name="action" value="save_unit" class="btn btn-primary">
+                <span class="icon"></span>
+                {% if edit_mode %}Update{% else %}Add{% endif %} {{ unit_type }}
+            </button>
             <a href="{{ url_for('main.index') }}" class="btn btn-link">Back to Story</a>
         </form>
     </div>

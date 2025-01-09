@@ -1,8 +1,21 @@
 :root {
-    --primary-blue: #1F3C88; /* Adjust to match your logo's blue */
-    --primary-beige: #F5F5DC; /* Adjust to match your logo's beige */
+    --primary-blue: #1F3C88; /* Your dark blue color */
+    --primary-beige: #F5F5DC; /* Your beige color */
     --text-color: #333;
-    --bg-color: #FAF2D5; /* Light beige for background */
+    --bg-color: #FAF2D5; /* Light beige background */
+}
+
+/* Override Bootstrap's primary button */
+.btn-primary {
+    background-color: transparent;
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
 }
 
 body {
@@ -15,8 +28,9 @@ body {
     background-color: var(--primary-blue) !important;
 }
 
+/* Header text to white */
 .navbar-brand, .nav-link, .navbar-text {
-    color: var(--primary-beige) !important;
+    color: white !important;
 }
 
 .nav-link:hover {
@@ -24,15 +38,18 @@ body {
 }
 
 .btn-outline-light {
-    color: var(--primary-beige);
-    border-color: var(--primary-beige);
+    color: white !important;
+    border-color: white !important;
+    background-color: transparent;
 }
 
 .btn-outline-light:hover {
-    background-color: var(--primary-beige);
-    color: var(--primary-blue);
-    border-color: var(--primary-beige);
+    background-color: white !important;
+    color: var(--primary-blue) !important;
+    border-color: var(--primary-blue);
 }
+
+
 
 h1, h2, h3 {
     color: var(--primary-blue);
@@ -72,10 +89,11 @@ footer {
     background-color: var(--primary-beige);
 }
 
+/* Adjust alert-info background color */
 .alert-info {
-    background-color: var(--primary-beige);
-    color: var(--text-color);
-    border-color: var(--primary-blue);
+    background-color: #D9EDF7; /* A stronger blue */
+    color: black; /* Adjust text color for contrast */
+    border-color: #BCE8F1;
 }
 
 @media (max-width: 576px) {
@@ -89,4 +107,88 @@ footer {
     overflow-y: auto;
     /* Optional: Add some padding or border */
     padding-right: 15px; /* To account for scrollbar */
+}
+
+/* Override Bootstrap's success button */
+.btn-success, .btn-outline-success {
+    background-color: transparent;
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-success:hover, .btn-outline-success:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+/* Style h4 headings */
+h4 {
+    color: var(--primary-blue);
+}
+
+/* Style the accordion button */
+.accordion-button {
+    background-color: white;
+    color: black;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+/* General button styles */
+.btn {
+    background-color: transparent;
+    color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+}
+
+.btn:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+/* Specific adjustments for small buttons */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+}
+
+.list-group-item.active {
+    background-color: var(--primary-blue) !important;
+    color: white !important;
+    border-color: var(--primary-blue);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--primary-blue) !important;
+    color: white !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(31, 60, 136, 0.25); /* Adjust the opacity as needed */
+}
+
+
+.btn .icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image:url('black_transparent.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.btn:hover .icon {
+    background-image: url('white_transparent.png');
 }
