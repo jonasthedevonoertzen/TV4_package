@@ -35,13 +35,14 @@ def create_app():
     def inject_current_year():
         return {'current_year': datetime.datetime.utcnow().year}
 
-
-    return app
-
-if __name__ == '__main__':
-    app = create_app()
-
     # Initialize the database (moved to story_creator package)
     init_db()
 
+    return app
+
+
+app = create_app()
+
+
+if __name__ == '__main__':
     app.run(debug=True)  # , host="0.0.0.0"

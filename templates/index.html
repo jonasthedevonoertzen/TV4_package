@@ -32,6 +32,15 @@
                     <a class="btn btn-primary" href="{{ url_for('main.download_story_text', story_id=selected_story.id) }}">Download as TXT</a>
                     <a class="btn btn-primary" href="{{ url_for('main.download_story_json', story_id=selected_story.id) }}">Download JSON</a>
                 </div>
+                {% if selected_story.undefined_names %}
+                    <h4 class="mt-4">Undefined Units</h4>
+                    <p>The following units still need to be created:</p>
+                    <ul>
+                        {% for undefined_unit in selected_story.undefined_names %}
+                            <li>{{ undefined_unit }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
                 <h4>Add a Unit</h4>
                 <div class="list-group list-group-horizontal flex-wrap">
                 {% for unit_type in unit_classes_dict.keys() %}

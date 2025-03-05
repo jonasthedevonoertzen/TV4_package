@@ -13,6 +13,7 @@ from werkzeug.datastructures import MultiDict
 import json
 import os
 import tempfile
+import warnings
 
 from story_creator.openai_api_call import call_openai
 
@@ -158,10 +159,10 @@ def assign_labels():
         return redirect(url_for('main.index'))
 
     # Create the label
-    label_id = create_label(current_user.email, label_name)
+    label_id = create_label(label_name, current_user.email)
 
     # Assign the labels to units
-    assign_labels_to_units(label_id, unit_ids)
+    assign_labels_to_units([label_id], unit_ids)
 
     flash(f"Label '{label_name}' has been assigned to selected units.")
     return redirect(url_for('main.index'))
@@ -222,6 +223,35 @@ def select_story(story_id):
     flash(f"Story '{story.name}' has been selected.")
     return redirect(url_for('main.index'))
 
+
+def clean_form_data(form_data, fields):
+    for field in fields:
+        for name in [field.get('name'), f"{field.get('name')}_new"]:
+            if form_data.get(name) not in [None, [], '', ['']]:
+                if isinstance(form_data.get(name), list):
+                    form_data[name] = form_data.get(name)[0]
+                else:
+                    form_data[name] = form_data.get(name)
+                    warnings.warn(f"Value in form_data not of type list: {name} : {form_data.get(name)}")
+            else:
+                warnings.warn("When you see this, something is wrong")
+                if name.endswith('_new'):
+                    form_data[name] = ''
+                elif field.get('type') == 'list':
+                    form_data[name] = []
+                elif field.get('type') == 'str':
+                    form_data[name] = ''
+                elif field.get('type') == 'bool':
+                    form_data[name] = False
+                elif field.get('type') == 'float':
+                    form_data[name] = 0.
+                elif field.get('type') == 'int':
+                    form_data[name] = 0
+                else:
+                    warnings.warn("When you see this, something is double wrong")
+    return form_data
+
+
 @main_bp.route('/story/<int:story_id>/add_unit/<unit_type>', methods=['GET', 'POST'])
 @login_required
 def add_unit(story_id, unit_type):
@@ -248,7 +278,10 @@ def add_unit(story_id, unit_type):
         if action == 'fill_features':
             # Handle the OpenAI API call
             description = form_data.get('unit_description', [''])[0].strip()
-            if not description:
+            if description == '':
+                description = form_data.get('name', [''])[0].strip()
+            if not description:  # this ifclause should now never be called
+                warnings.warn('When you see this, something is wrong')
                 errors = ["Please provide a description to fill features."]
                 fields = prepare_fields(feature_schema, story)
                 return render_template(
@@ -336,9 +369,8 @@ def add_unit(story_id, unit_type):
             if errors:
                 # Re-render the form with error messages
                 fields = prepare_fields(feature_schema, story)
-                for field in fields:
-                    if form_data.get(field.get('name')) is None and field.get('type') == 'list':
-                        form_data[field.get('name')] = []
+                form_data = clean_form_data(form_data, fields)
+
                 return render_template(
                     'add_unit.html',
                     unit_type=unit_type,
@@ -404,7 +436,10 @@ def edit_unit(story_id, unit_name):
         if action == 'fill_features':
             # Handle the OpenAI API call
             description = form_data.get('unit_description', [''])[0].strip()
-            if not description:
+            if description == '':
+                description = form_data.get('name', [''])[0].strip()
+            if not description:  # this ifclause should now never be called
+                warnings.warn('When you see this, something is wrong')
                 errors = ["Please provide a description to fill features."]
                 fields = prepare_fields(feature_schema, story)
                 return render_template(
@@ -492,9 +527,7 @@ def edit_unit(story_id, unit_name):
             if errors:
                 # Re-render the form with error messages
                 fields = prepare_fields(feature_schema, story)
-                for field in fields:
-                    if form_data.get(field.get('name')) is None and field.get('type') == 'list':
-                        form_data[field.get('name')] = []
+                form_data = clean_form_data(form_data, fields)
                 return render_template(
                     'add_unit.html',
                     unit_type=unit_type,
@@ -521,10 +554,7 @@ def edit_unit(story_id, unit_name):
         # GET request, render form with existing data
         fields = prepare_fields(feature_schema, story)
         form_data = MultiDict(unit.features)
-
-        for field in fields:
-            if form_data.get(field.get('name')) is None and field.get('type') == 'list':
-                form_data[field.get('name')] = []
+        form_data = clean_form_data(form_data, fields)
         return render_template(
             'add_unit.html',
             unit_type=unit_type,

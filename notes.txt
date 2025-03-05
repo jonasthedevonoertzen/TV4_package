@@ -1,0 +1,30 @@
+While creating a new unit, if asking for features to be filled out but no description is given
+    the possible additional entries to lists are then [''].
+    - fixed by setting the default for the description to the name of the unit
+
+When trying to create a unit that already exists an error is raised (good).
+    Also all values get put into lists. - fixed with cleanup_form_data funnction - kind of messy.
+    The error is raised to late. If an undefined unit is referenced this unit already gets created before the error is thrown.
+
+The fill out features currently also changes the name. I don't like that. Ain't that bad either.
+
+The proper solution for blueprints/main.py is to use Flask WTForms. For now it works how it is even though it's messy.
+
+The created pdf files need to be deleted automatically after getting sent to user or they will take up all space eventually.
+
+
+
+Melody Feedback
+    Text fields (even for short texts) should scale properly like textarea. - solved
+    Prettify display of units - xx
+    Worth of item given by chatgpt to 7500.0 was displayed as such. Was handled nicely. - xx
+    Gender for characters - xx
+
+    Liste dessen was noch fehlt - done
+    Places - Upcoming events does not have a dropdown. Why? - xx
+
+    When editing a unit empty _new fields have [] as default. Terrible. - solved, though it isn't clean. - solved
+    Download as pdf - server error - not when run locally - folder pdf_files was missing on server - solved
+    assigning custom labels - server error - some stupid coding error - fixed (database_handler.py and main.py) - fixed
+
+

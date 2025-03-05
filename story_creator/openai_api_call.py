@@ -1,7 +1,7 @@
 import openai
 import time
 
-client = openai.OpenAI()
+openai_client = openai.OpenAI()
 
 
 '''
@@ -14,7 +14,7 @@ openai.api_key = openai_api_key
 
 def call_openai(messages, model="gpt-4o-mini"):
     t = time.time()
-    response = openai.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=model,
         messages=messages
     )
