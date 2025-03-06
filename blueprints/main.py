@@ -14,6 +14,7 @@ import json
 import os
 import tempfile
 import warnings
+import random
 
 from story_creator.openai_api_call import call_openai
 
@@ -209,7 +210,70 @@ def create_story_route():
         flash(f"Story '{story_name}' has been created.")
         return redirect(url_for('main.index'))
 
-    return render_template('create_story.html')
+    # Define your ten different default sets
+    default_sets = [
+        {
+            'story_name': "The Lost Kingdom",
+            'setting_and_style': "A vast, ancient kingdom shrouded in mystery, where ruins hide forgotten legends.",
+            'main_challenge': "Rescue the rightful heir from a dark sorcerer's curse."
+        },
+        {
+            'story_name': "Space Odyssey",
+            'setting_and_style': "An interstellar journey amidst futuristic cities and alien worlds.",
+            'main_challenge': "Prevent a catastrophic collision between rival alien empires."
+        },
+        {
+            'story_name': "Mystic Forest",
+            'setting_and_style': "An enchanted woodland teeming with magical creatures and hidden lore.",
+            'main_challenge': "Solve the ancient puzzle of the forest to dispel a lingering curse."
+        },
+        {
+            'story_name': "Cyber Rebellion",
+            'setting_and_style': "A neon-lit dystopian city where technology and rebellion collide.",
+            'main_challenge': "Lead an uprising against the oppressive corporate regime."
+        },
+        {
+            'story_name': "Pirate's Treasure",
+            'setting_and_style': "High seas adventure on treacherous waters with hidden islands and secret coves.",
+            'main_challenge': "Chart a course to locate a legendary treasure guarded by mythical sea creatures."
+        },
+        {
+            'story_name': "Time Traveler's Chronicle",
+            'setting_and_style': "A whirlwind journey across time—from medieval battles to a dazzling future.",
+            'main_challenge': "Prevent temporal paradoxes that could unravel history."
+        },
+        {
+            'story_name': "Realm of Dreams",
+            'setting_and_style': "A surreal landscape where shifting realities and dreams merge seamlessly.",
+            'main_challenge': "Defeat the nightmare that invades the dreams of the innocent."
+        },
+        {
+            'story_name': "Urban Legends",
+            'setting_and_style': "A modern metropolis rife with secrets, dark alleys, and hidden conspiracies.",
+            'main_challenge': "Investigate bizarre, unexplained events that hint at an ancient urban myth."
+        },
+        {
+            'story_name': "Island of Whispers",
+            'setting_and_style': "A remote island where every breeze carries a secret and traditions run deep.",
+            'main_challenge': "Uncover the truth behind eerie occurrences and centuries-old rituals."
+        },
+        {
+            'story_name': "Enchanted Chronicles",
+            'setting_and_style': "A magical realm where humans and mythical creatures coexist in fragile harmony.",
+            'main_challenge': "Decipher a long-forgotten enigma before the balance of nature is disrupted."
+        }
+    ]
+
+    # Choose one set randomly each time
+    chosen_defaults = random.choice(default_sets)
+
+    # Pass the defaults to your template
+    return render_template(
+        'create_story.html',
+        default_story_name=chosen_defaults['story_name'],
+        default_setting_and_style=chosen_defaults['setting_and_style'],
+        default_main_challenge=chosen_defaults['main_challenge']
+    )
 
 @main_bp.route('/select_story/<int:story_id>')
 @login_required

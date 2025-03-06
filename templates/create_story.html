@@ -9,15 +9,34 @@
         <form method="post" onsubmit="handleSubmit(event)">
             <div class="mb-3">
                 <label for="story_name" class="form-label">Story Name:</label>
-                <input type="text" class="form-control" name="story_name" id="story_name" required>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="story_name"
+                    id="story_name"
+                    required
+                    value="{{ default_story_name }}"
+                >
             </div>
             <div class="mb-3">
                 <label for="setting_and_style" class="form-label">Setting and Style:</label>
-                <textarea class="form-control" name="setting_and_style" id="setting_and_style" rows="4" required></textarea>
+                <textarea
+                    class="form-control"
+                    name="setting_and_style"
+                    id="setting_and_style"
+                    rows="4"
+                    required
+                >{{ default_setting_and_style }}</textarea>
             </div>
             <div class="mb-3">
                 <label for="main_challenge" class="form-label">Main Challenge, Task or Goal:</label>
-                <textarea class="form-control" name="main_challenge" id="main_challenge" rows="4" required></textarea>
+                <textarea
+                    class="form-control"
+                    name="main_challenge"
+                    id="main_challenge"
+                    rows="4"
+                    required
+                >{{ default_main_challenge }}</textarea>
             </div>
             <button type="submit" class="btn btn-primary">Create Story</button>
             <a href="{{ url_for('main.index') }}" class="btn btn-link">Back to Home</a>

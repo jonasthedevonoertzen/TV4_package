@@ -10,7 +10,7 @@ The fill out features currently also changes the name. I don't like that. Ain't 
 
 The proper solution for blueprints/main.py is to use Flask WTForms. For now it works how it is even though it's messy.
 
-Melody Feedback
+M Feedback
     Text fields (even for short texts) should scale properly like textarea. - solved
     Prettify display of units - xx
     Worth of item given by chatgpt to 7500.0 was displayed as such. Was handled nicely. - xx
@@ -30,7 +30,7 @@ Generell müssen alle Unit features einmal mit Milan gecheckt werden.
 
 Ersetze 4o durch o1
 
-Elias Feedback
+X Feedback
     Wichtig:
         Animation während Website lädt.
 
@@ -45,11 +45,11 @@ Ladezeiten optimieren
 
 The created pdf files need to be deleted automatically after getting sent to user or they will take up all space eventually.
 
-Include default values for first three story fields.
+Include default values for first three story fields. //
 
 TODO:
     Story Creator vs Talevortex //
     Animation machen während Website lädt //
     Unit add - references takeover //
-    delete pdfs
+    delete pdfs //
 
