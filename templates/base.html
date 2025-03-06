@@ -5,14 +5,17 @@
     <title>{% block title %}Tale Vortex{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <!-- Bootstrap JS
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script> -->
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <!-- Meta for Responsive Design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Include Select2 CSS -->
     <link href="{{ url_for('static', filename='select2.min.css') }}" rel="stylesheet" />
-    <!-- Include jQuery and Select2 JS -->
+    <!-- Include jQuery and Select2 JS
     <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+
     <script src="{{ url_for('static', filename='select2.min.js') }}"></script>
 
     <script>
@@ -24,7 +27,7 @@
                 placeholder: 'Select labels to exclude'
             });
         });
-    </script>
+    </script> -->
 
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
