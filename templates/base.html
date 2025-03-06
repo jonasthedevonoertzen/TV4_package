@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Story Creator{% endblock %}</title>
+    <title>{% block title %}Tale Vortex{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
     <!-- Custom CSS -->
@@ -31,12 +31,17 @@
 
 </head>
 <body>
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
                 <img src="{{ url_for('static', filename='white_transparent.png') }}" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
-                Story Creator
+                TaleVortex
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +91,7 @@
     <!-- Footer -->
     <footer class="bg-light text-center text-lg-start mt-auto">
         <div class="text-center p-3">
-            &copy; {{ current_year }} Story Creator Team
+            &copy; {{ current_year }} TaleVortex Team
         </div>
     </footer>
 

@@ -6,7 +6,7 @@
 <div class="row justify-content-center">
     <div class="col-md-8">
         <h2>Create New Story</h2>
-        <form method="post">
+        <form method="post" onsubmit="handleSubmit(event)">
             <div class="mb-3">
                 <label for="story_name" class="form-label">Story Name:</label>
                 <input type="text" class="form-control" name="story_name" id="story_name" required>

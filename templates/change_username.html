@@ -17,7 +17,7 @@
                 </div>
             {% endif %}
         {% endwith %}
-        <form method="post">
+        <form method="post" onsubmit="handleSubmit(event)">
             <div class="mb-3">
                 <label for="username" class="form-label">New Username:</label>
                 <input type="text" class="form-control" name="username" id="username" value="{{ username }}" required>

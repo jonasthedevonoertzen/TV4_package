@@ -390,6 +390,8 @@ def add_unit(story_id, unit_type):
                 update_references_with_new_unit(unit, story, old_name=unit.name)
                 flash(f"{unit_type} '{name}' has been added.")
                 return redirect(url_for('main.index'))
+        else:
+            raise Exception('submitted with unknown action.')
     elif request.method == 'GET':
         # GET request, render form
         fields = prepare_fields(feature_schema, story)

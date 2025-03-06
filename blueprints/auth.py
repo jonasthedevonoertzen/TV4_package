@@ -74,10 +74,10 @@ def logout():
 def send_login_email(email, token):
     """Send login email with the login link."""
     login_link = url_for('auth.login_with_token', token=token, _external=True)
-    subject = "Your Login Link for Story Creator"
+    subject = "Your Login Link for TaleVortex"
     body = f"""Hello,
 
-Click the link below to log in to Story Creator:
+Click the link below to log in to TaleVortex:
 
 {login_link}
 
@@ -86,7 +86,7 @@ This link will expire in 1 hour.
 If you did not request this email, please ignore it.
 
 Best regards,
-Story Creator Team"""
+TaleVortex Team"""
 
     # Replace these with your SMTP server details or use environment variables
     SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.example.com')

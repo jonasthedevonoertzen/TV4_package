@@ -17,13 +17,19 @@
             </div>
         {% endif %}
 
-        <form method="post">
+        <form method="post" onsubmit="handleSubmit(event)">
+            <input type="hidden" name="action" id="action-input" value="">
             {% if not edit_mode %}
             <div class="mb-3">
                 <label for="unit_description" class="form-label">Describe the {{ unit_type }} you want to create:</label>
                 <textarea class="form-control" name="unit_description" id="unit_description" rows="4">{{ form_data.get('unit_description', '') }}</textarea>
             </div>
-            <button type="submit" name="action" value="fill_features" class="btn btn-secondary mb-3">
+            <button
+                    type="submit"
+                    onclick="document.getElementById('action-input').value='fill_features'"
+                    name="action"
+                    value="fill_features"
+                    class="btn btn-secondary mb-3">
                 <span class="icon"></span>
                 Fill Out Features
             </button>
@@ -70,7 +76,12 @@
                 </div>
             {% endfor %}
 
-            <button type="submit" name="action" value="save_unit" class="btn btn-primary">
+            <button
+                    type="submit"
+                    onclick="document.getElementById('action-input').value='save_unit'"
+                    name="action"
+                    value="save_unit"
+                    class="btn btn-primary">
                 <span class="icon"></span>
                 {% if edit_mode %}Update{% else %}Add{% endif %} {{ unit_type }}
             </button>

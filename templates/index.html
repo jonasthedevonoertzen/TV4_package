@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Home - Story Creator{% endblock %}
+{% block title %}Home - TaleVortex{% endblock %}
 
 {% block content %}
 {% if current_user.is_authenticated %}
@@ -82,7 +82,7 @@
         <div class="col-md-4">
             <h2>All Units</h2>
             <!-- Filter by Labels -->
-            <form method="get" action="{{ url_for('main.index') }}">
+            <form method="get" action="{{ url_for('main.index') }}" onsubmit="handleSubmit(event)">
                 <div class="mb-3">
                     <label class="form-label">Include Labels:</label>
                     <!-- Updated label selection -->
@@ -108,7 +108,7 @@
                 <button type="submit" class="btn btn-primary">Filter</button>
             </form>
 
-            <form method="get" action="{{ url_for('main.index') }}">
+            <form method="get" action="{{ url_for('main.index') }}" onsubmit="handleSubmit(event)">
                 <div class="mb-3">
                     <label class="form-label">Search Units:</label>
                     <input type="text" class="form-control" name="search_query" value="{{ search_query }}">
@@ -118,7 +118,7 @@
 
             <div class="scrollable-units">
                 <!-- Units List and Label Assignment -->
-                <form method="post" action="{{ url_for('main.assign_labels') }}" id="label-form">
+                <form method="post" action="{{ url_for('main.assign_labels') }}" id="label-form" onsubmit="handleSubmit(event)">
                     <div class="list-group mt-3">
                     {% for unit in units %}
                         <label class="list-group-item">
@@ -153,7 +153,7 @@
     </div>
 {% else %}
     <div class="text-center">
-        <h2>Welcome to Story Creator</h2>
+        <h2>Welcome to TaleVortex</h2>
         <p>Please <a href="{{ url_for('auth.login') }}">log in</a> to create and view stories.</p>
     </div>
 {% endif %}
