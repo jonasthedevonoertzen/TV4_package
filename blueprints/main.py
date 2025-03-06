@@ -591,26 +591,41 @@ def delete_unit(story_id, unit_name):
     return redirect(url_for('main.index'))
 
 
+
 @main_bp.route('/story/<int:story_id>/download')
 @login_required
 def download_story(story_id):
-    """Route to download the story as a PDF."""
     story = get_story_by_id(story_id)
     if story is None:
         abort(404, description="Story not found.")
     if story.user_email != current_user.email:
         abort(403)
 
-    # Generate the PDF file
-    filename = f'pdf_files/story_{story.id}.pdf'
-    story.to_pdf(filename)  # Assuming to_pdf is a method on the Story model
+    # Create a temporary file for the PDF
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+        tmp_filename = tmp_file.name
 
-    # Send the file to the client
-    return send_file(
-        filename,
-        as_attachment=True,
-        mimetype='application/pdf'
-    )
+    try:
+        # Generate the PDF file into the temporary file.
+        story.to_pdf(tmp_filename)  # Make sure the to_pdf() method writes to the provided filename
+
+        # Send the file to the client.
+        return send_file(
+            tmp_filename,
+            as_attachment=True,
+            download_name=f"{story.name}.pdf",
+            mimetype='application/pdf'
+        )
+    except Exception as e:
+        flash(f"An error occurred while generating the PDF: {e}")
+        return redirect(url_for('main.index'))
+    finally:
+        # Ensure the temporary file is deleted after sending.
+        if os.path.exists(tmp_filename):
+            os.remove(tmp_filename)
+
+
+
 
 
 @main_bp.route('/story/<int:story_id>/download_json')
