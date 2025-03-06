@@ -1,4 +1,5 @@
 # app.py
+import os
 
 from flask import Flask
 from flask_login import LoginManager
@@ -14,7 +15,7 @@ import time
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = 'different_secret_key'  # Replace with a secure key or load from environment variables
+    app.secret_key = os.environ.get("FLASK_SECRET_KEY") # Replace with a secure key or load from environment variables
 
     # Initialize Flask-Login
     login_manager = LoginManager()

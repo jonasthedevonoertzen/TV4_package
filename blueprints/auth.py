@@ -21,7 +21,7 @@ from story_creator.database_handler import get_user_by_email, create_user, get_u
 auth_bp = Blueprint('auth', __name__)
 
 # Initialize serializer for generating tokens
-serializer = URLSafeTimedSerializer('your_secret_key')  # Should match the app's secret key
+serializer = URLSafeTimedSerializer(os.environ.get("FLASK_SECRET_KEY"))  # Should match the app's secret key
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
