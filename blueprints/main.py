@@ -129,6 +129,7 @@ def add_existing_unit(unit_id):
         )
         # Add the new unit to the story with is_copy=True and user_email
         add_unit_to_story(story_id, new_unit, user_email=current_user.email, is_copy=True)
+        update_references_with_new_unit(new_unit, story)
         flash(f"Unit '{unit.name}' has been added to your story.")
         return redirect(url_for('main.index'))
     elif action == 'use_as_template':
@@ -755,18 +756,30 @@ def process_form_submission(form_data, feature_schema, story, unit_name=None):
 
             combined_values = [v.strip() for v in selected_values + new_values if v.strip()]
 
+            '''
             # Add to undefined names if necessary
             for v in combined_values:
                 related_unit = get_unit_by_name(story.id, v)
                 if not related_unit and v not in story.undefined_names:
                     story.undefined_names.append(v)
+            '''
             features[feature_name] = combined_values
         else:
             # Unsupported type
             errors.append(f"Unsupported type for {feature_name}.")
             features[feature_name] = value
-    update_story(story)
+    # update_story(story)
     return features, errors
+
+
+def check_for_and_add_undefined_references(unit, story):
+    for feat, vals in unit.features.items():
+        if isinstance(vals, list):
+            for v in vals:
+                related_unit = get_unit_by_name(story.id, v)
+                if not related_unit and v not in story.undefined_names:
+                    story.undefined_names.append(v)
+    update_story(story)
 
 def feature_value_prefill_prompt(story, unit_type, description, feature_schema):
     """

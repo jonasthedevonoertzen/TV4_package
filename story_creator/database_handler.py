@@ -573,6 +573,15 @@ def update_references_with_new_unit(unit, story, old_name=None):
         story (Story): The story containing the units.
         old_name (str or None): The old name of the unit before renaming, or None if it's newly defined.
     """
+    # add new undefined names that this unit creates
+    for feat, vals in unit.features.items():
+        if isinstance(vals, list):
+            for v in vals:
+                related_unit = get_unit_by_name(story.id, v)
+                if not related_unit and v not in story.undefined_names:
+                    story.undefined_names.append(v)
+    update_story(story)
+
     # Remove the unit name from undefined_names if present
     if unit.name in story.undefined_names:
         story.undefined_names.remove(unit.name)

@@ -48,8 +48,8 @@ The created pdf files need to be deleted automatically after getting sent to use
 Include default values for first three story fields.
 
 TODO:
-    Story Creator vs Talevortex /
-    Animation machen während Website lädt
-    Unit add - references takeover
+    Story Creator vs Talevortex //
+    Animation machen während Website lädt //
+    Unit add - references takeover //
     delete pdfs
 
