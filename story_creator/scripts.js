@@ -1,3 +1,5 @@
+console.log("Running Javascript")
+
 // JavaScript to collect selected unit IDs for label assignment
 document.addEventListener('DOMContentLoaded', function() {
     var labelForm = document.getElementById('label-form');
@@ -41,6 +43,8 @@ function useAsTemplate(button) {
     form.submit();
 }
 
+console.log("Now follows showLoading")
+
 function showLoading() {
   const loader = document.getElementById('loading-screen');
   if (loader) {
@@ -72,3 +76,5 @@ document.addEventListener('DOMContentLoaded', function () {
     loader.style.display = 'none'; // Hide the loading screen after the page loads
   }
 });
+
+console.log("Finished Javascript")
